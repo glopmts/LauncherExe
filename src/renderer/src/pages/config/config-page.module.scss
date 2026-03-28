@@ -1,0 +1,404 @@
+@use '../../scss/variables' as *;
+
+// Keyframes para animações
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.configPage {
+  height: 100%;
+  overflow: scroll;
+  display: flex;
+  padding: 2rem;
+  flex-direction: column;
+
+  background: $bg-deep;
+  font-family: $font-sans;
+  color: $text-primary;
+  animation: fadeIn 0.5s $ease-out;
+
+  // Header com animação
+  .header {
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    text-align: center;
+    animation: fadeInUp 0.6s $ease-out;
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, $text-primary, $accent-light);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+
+      @supports not (background-clip: text) {
+        color: $accent-light;
+      }
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: $text-secondary;
+      line-height: 1.5;
+    }
+  }
+
+  // Container das opções
+  .configOptions {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  // Cada opção de configuração
+  .configOption {
+    background: $bg-surface;
+    border: 1px solid $border;
+    border-radius: $radius-xl;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    transition: all 0.3s $ease-in-out;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    animation: slideInRight 0.5s $ease-out backwards;
+
+    // Delay para cada item
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.05}s;
+      }
+    }
+
+    // Efeito de hover
+    &:hover {
+      background: $bg-hover;
+      border-color: $border-strong;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+      .optionControl {
+        .toggleButton,
+        .actionButton {
+          transform: scale(1.05);
+        }
+      }
+    }
+
+    // Estado ativo
+    &.active {
+      background: $bg-elevated;
+      border-left: 3px solid $accent;
+
+      .optionInfo {
+        h2 {
+          color: $accent-light;
+        }
+      }
+    }
+
+    // Efeito de ripple ao clicar
+    &:active {
+      transform: scale(0.99);
+    }
+
+    // Info da opção
+    .optionInfo {
+      flex: 1;
+
+      h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        transition: color 0.2s $ease-out;
+      }
+
+      p {
+        font-size: 0.875rem;
+        color: $text-secondary;
+        line-height: 1.5;
+        margin: 0;
+      }
+    }
+
+    // Controles
+    .optionControl {
+      flex-shrink: 0;
+
+      // Toggle button personalizado
+      .toggleButton {
+        background: $bg-active;
+        border: 1px solid $border;
+        border-radius: 40px;
+        padding: 0.5rem 1rem;
+        min-width: 100px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.3s $ease-out;
+        position: relative;
+        overflow: hidden;
+
+        // Slider animado
+        .toggleSlider {
+          width: 20px;
+          height: 20px;
+          background: $text-muted;
+          border-radius: 50%;
+          transition: all 0.3s $ease-out;
+          position: relative;
+          z-index: 1;
+        }
+
+        .toggleLabel {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: $text-secondary;
+          transition: color 0.3s $ease-out;
+          position: relative;
+          z-index: 1;
+        }
+
+        // Estado ativo
+        &.active {
+          background: $accent-dim;
+          border-color: $accent;
+
+          .toggleSlider {
+            background: $accent;
+            transform: translateX(24px);
+            box-shadow: 0 0 8px $accent-glow;
+          }
+
+          .toggleLabel {
+            color: $accent-light;
+          }
+        }
+
+        // Efeito de hover
+        &:hover {
+          background: $bg-hover;
+          border-color: $accent;
+
+          .toggleSlider {
+            transform: scale(1.1);
+          }
+        }
+
+        // Efeito de ripple ao clicar
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+
+      // Action button
+      .actionButton {
+        background: $accent-dim;
+        border: 1px solid $accent;
+        border-radius: $radius-md;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $accent-light;
+        cursor: pointer;
+        transition: all 0.3s $ease-out;
+        position: relative;
+        overflow: hidden;
+
+        &:hover {
+          background: $accent;
+          color: white;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px $accent-glow;
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+
+    // Efeito de brilho ao passar o mouse
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+      transition: left 0.6s $ease-out;
+      pointer-events: none;
+    }
+
+    &:hover::before {
+      left: 100%;
+    }
+  }
+
+  // Container de loading
+  .loadingContainer {
+    max-width: 800px;
+    margin: 4rem auto;
+    text-align: center;
+    animation: pulse 1.5s ease-in-out infinite;
+
+    p {
+      color: $text-secondary;
+      font-size: 1rem;
+
+      &::before {
+        content: '⚙️';
+        display: inline-block;
+        margin-right: 0.5rem;
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+
+  // Footer
+  .footer {
+    max-width: 800px;
+    margin: 3rem auto 0;
+    text-align: center;
+    animation: fadeInUp 0.5s $ease-out;
+    animation-delay: 0.3s;
+    animation-fill-mode: backwards;
+
+    .note {
+      font-size: 0.75rem;
+      color: $text-muted;
+      padding: 1rem;
+      background: $bg-surface;
+      border-radius: $radius-lg;
+      border: 1px solid $border;
+
+      &::before {
+        content: 'ℹ️';
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+// Media queries para responsividade
+@media (max-width: 768px) {
+  .configPage {
+    padding: 1rem;
+
+    .header {
+      margin-bottom: 2rem;
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+    }
+
+    .configOption {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.25rem;
+
+      .optionControl {
+        width: 100%;
+
+        .toggleButton,
+        .actionButton {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+  }
+}
+
+// Suporte para prefers-reduced-motion
+@media (prefers-reduced-motion: reduce) {
+  .configPage,
+  .configOption,
+  .toggleButton,
+  .actionButton {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+// Animação de spin para o ícone de loading
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

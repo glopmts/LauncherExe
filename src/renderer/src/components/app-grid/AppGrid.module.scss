@@ -1,0 +1,77 @@
+@use '../../scss/variables' as *;
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: $bg-deep;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-primary;
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  font-size: 11px;
+  color: $text-muted;
+}
+
+.grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  align-content: start;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: $text-muted;
+  font-size: 13px;
+
+  strong {
+    color: $text-secondary;
+  }
+}
+
+.emptyIcon {
+  font-size: 36px;
+  opacity: 0.3;
+}
+
+.emptyAdd {
+  margin-top: 4px;
+  padding: 8px 16px;
+  background: $accent-dim;
+  color: $accent-light;
+  border-radius: $radius-md;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba($accent, 0.2);
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba($accent, 0.25);
+  }
+}

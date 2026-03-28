@@ -1,0 +1,53 @@
+// Colors
+$bg-deep: #07070d;
+$bg-base: #0d0d16;
+$bg-surface: #13131f;
+$bg-elevated: #1a1a2a;
+$bg-hover: #20202e;
+$bg-active: #252535;
+
+$border: rgba(255, 255, 255, 0.06);
+$border-strong: rgba(255, 255, 255, 0.12);
+
+$accent: #6c63ff;
+$accent-glow: rgba(108, 99, 255, 0.35);
+$accent-dim: rgba(108, 99, 255, 0.15);
+$accent-light: #8b84ff;
+
+$green: #4ade80;
+$red: #f87171;
+$amber: #fbbf24;
+$cyan: #22d3ee;
+
+$text-primary: #f0f0fa;
+$text-secondary: rgba(240, 240, 250, 0.55);
+$text-muted: rgba(240, 240, 250, 0.3);
+
+// Spacing
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 14px;
+$radius-gl: 16px;
+$radius-xl: 20px;
+
+// Motion
+$ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+// Typography
+$font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+$font-sans: 'DM Sans', system-ui, sans-serif;
+$body-font-size: 14px;
+$small-font-size: 12px;
+
+// Buttons
+$button-padding: 10px 16px;
+$button-border-radius: $radius-md;
+$button-background: $accent;
+$button-color: $text-primary;
+$button-muted-color: $text-secondary;
+$button-danger-color: $red;
+$button-ghost-color: $text-muted;
+$button-hover-bg: $bg-hover;
+$button-active-opacity: 0.82;
+$button-disabled-opacity: 0.45;

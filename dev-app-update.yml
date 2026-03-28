@@ -1,0 +1,4 @@
+publish:
+  provider: github
+  owner: glopmts
+  repo: LauncherExe

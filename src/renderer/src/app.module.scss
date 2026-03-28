@@ -1,0 +1,23 @@
+@use './scss/variables' as *;
+
+.appShell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: $bg-deep;
+  overflow: hidden;
+}
+
+.appBody {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}

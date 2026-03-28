@@ -1,0 +1,94 @@
+@use '../../../scss/variables' as *;
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: $button-padding;
+  border-radius: $button-border-radius;
+  border: 1px solid transparent;
+  font-size: $body-font-size;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background 0.16s ease,
+    opacity 0.16s ease,
+    transform 0.12s ease;
+
+  &:hover {
+    opacity: $button-active-opacity;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: $button-disabled-opacity;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.primary {
+  background: $button-background;
+  color: $button-active-opacity;
+  border-color: transparent;
+}
+
+.secondary {
+  background: transparent;
+  color: $button-muted-color;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.danger {
+  background: $button-danger-color;
+  color: $button-background;
+  border-color: transparent;
+}
+
+.ghost {
+  background: transparent;
+  color: $button-muted-color;
+  border-color: transparent;
+}
+
+.sm {
+  padding: 6px 12px;
+  font-size: $small-font-size;
+}
+
+.md {
+  padding: $button-padding;
+}
+
+.lg {
+  padding: 14px 20px;
+  font-size: 16px;
+}
+
+.configLink {
+  @extend .button;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.configLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: #e4ebe4;
+  }
+}

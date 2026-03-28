@@ -1,0 +1,43 @@
+@import './base.css';
+
+@media (max-width: 720px) {
+  .text {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 620px) {
+  .versions {
+    display: none;
+  }
+}
+
+@media (max-width: 350px) {
+  .tip,
+  .actions {
+    display: none;
+  }
+}
+
+@layer utilities {
+  .border-3 {
+    border-width: 3px;
+  }
+
+  .animate-in {
+    animation-duration: 200ms;
+  }
+
+  .fade-in-0 {
+    animation-name: fadeIn;
+  }
+
+  .zoom-in-95 {
+    animation-name: zoomIn;
+  }
+}
+
+link {
+  color: var(--primary-color);
+  text-decoration: none;
+}
