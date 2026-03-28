@@ -7,29 +7,23 @@ import { registerIpcHandlers } from './modules/ipcHandlers'
 import { buildTray, showBalloon } from './modules/tray'
 import { initAutoUpdater } from './updater'
 
-// ─────────────────────────────────────────────
 // State
-// ─────────────────────────────────────────────
 
 let mainWindow: BrowserWindow | null = null
 let isQuitting = false
 let windowState: 'focused' | 'background' | 'hidden' = 'focused'
 
-// ─────────────────────────────────────────────
 // GPU / performance flags
 // Nota: disableHardwareAcceleration() e os switches
 // abaixo são mutuamente exclusivos — escolha um ou outro.
 // Aqui usamos os switches para controle granular.
-// ─────────────────────────────────────────────
 
 app.commandLine.appendSwitch('disable-gpu-vsync')
 app.commandLine.appendSwitch('disable-gpu-compositing')
 
 const FPS = { focused: 60, background: 15, hidden: 1 } as const
 
-// ─────────────────────────────────────────────
 // Window factory
-// ─────────────────────────────────────────────
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -38,6 +32,7 @@ function createWindow(): BrowserWindow {
     show: false,
     autoHideMenuBar: true,
     frame: false,
+    icon,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -80,9 +75,7 @@ function createWindow(): BrowserWindow {
   return win
 }
 
-// ─────────────────────────────────────────────
 // Performance modes
-// ─────────────────────────────────────────────
 
 function setPerformanceMode(win: BrowserWindow, mode: typeof windowState): void {
   if (windowState === mode) return
@@ -115,9 +108,7 @@ function setPerformanceMode(win: BrowserWindow, mode: typeof windowState): void 
   }
 }
 
-// ─────────────────────────────────────────────
 // Window helpers (passados para outros módulos)
-// ─────────────────────────────────────────────
 
 function getWindow(): BrowserWindow | null {
   return mainWindow
@@ -142,9 +133,7 @@ function quit(): void {
   app.quit()
 }
 
-// ─────────────────────────────────────────────
 // GC periódico (só quando em background)
-// ─────────────────────────────────────────────
 
 function scheduleBackgroundMaintenance(): void {
   // GC a cada 60s — só executa quando a janela não está em foco
@@ -162,9 +151,7 @@ function scheduleBackgroundMaintenance(): void {
   }, 300_000)
 }
 
-// ─────────────────────────────────────────────
 // App lifecycle
-// ─────────────────────────────────────────────
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')

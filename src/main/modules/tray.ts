@@ -7,9 +7,9 @@ export function buildTray(showWindow: () => void, quit: () => void): Tray {
   let iconPath: string
 
   if (process.env.NODE_ENV === 'development') {
-    iconPath = join(__dirname, '../../resources/icon-ico.png')
+    iconPath = join(__dirname, '../../resources/icon.png')
   } else {
-    iconPath = join(process.resourcesPath, 'icon-ico.png')
+    iconPath = join(process.resourcesPath, 'icon.png')
   }
 
   const icon = nativeImage.createFromPath(iconPath).resize({ width: 50, height: 50 })

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AppEntry } from '../../types/interfaces'
-import styles from './AddModal.module.scss'
+import styles from './add-modal.module.scss'
 
 interface Props {
   initial: AppEntry | null

@@ -1,4 +1,4 @@
-publish:
-  provider: github
-  owner: glopmts
-  repo: LauncherExe
+provider: github
+owner: glopmts
+repo: LauncherExe
+updaterCacheDirName: glopmts/LauncherExe-updater

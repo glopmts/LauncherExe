@@ -1,6 +1,6 @@
 import { AppEntry, Category } from '@/types/interfaces'
-import { AppCard } from '../card/AppCard'
-import styles from './AppGrid.module.scss'
+import { AppCard } from '../card/app-cardf'
+import styles from './app-grid.module.scss'
 
 interface Props {
   apps: AppEntry[]

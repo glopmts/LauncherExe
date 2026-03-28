@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import styles from './Titlebar.module.scss'
+import styles from './titlebar.module.scss'
 
 interface Props {
   search: string

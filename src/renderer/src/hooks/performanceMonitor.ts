@@ -1,5 +1,4 @@
 export class PerformanceMonitor {
-  private static instance: PerformanceMonitor
   private metrics = {
     cpu: 0,
     memory: 0,

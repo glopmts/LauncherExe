@@ -1,6 +1,8 @@
 import { AppEntry } from '@/types/interfaces'
 import { useEffect, useRef, useState } from 'react'
-import styles from './AppCard.module.scss'
+import { FaEye } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
+import styles from './app-card.module.scss'
 
 interface Props {
   app: AppEntry
@@ -127,6 +129,15 @@ export function AppCard({ app, launching, onLaunch, onEdit, onDelete, onPin }: P
               }}
             >
               ✎ Edit
+            </button>
+            <button
+              onClick={() => {
+                setMenuOpen(false)
+              }}
+            >
+              <Link to={`/details/${app.id}`} className={styles.link_details}>
+                <FaEye /> Details
+              </Link>
             </button>
             <button onClick={handleOpenFolder}>⎘ Open folder</button>
             <div className={styles.menuDivider} />

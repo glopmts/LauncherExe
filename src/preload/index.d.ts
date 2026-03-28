@@ -25,6 +25,7 @@ export interface ElectronAPI {
   // Store
   getApps: () => Promise<AppEntry[]>
   saveApps: (data: AppEntry[]) => Promise<boolean>
+  getApp: () => Promise<AppEntry[]>
 
   // Auto launch
   setAutoLaunch: (enabled: boolean) => Promise<{ success: boolean }>

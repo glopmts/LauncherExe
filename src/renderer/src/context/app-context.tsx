@@ -66,7 +66,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const saveApps = useCallback((next: AppEntry[]) => {
     setApps(next)
-    const toStore = next.map(({ icon, ...rest }) => rest)
+    const toStore = next.map((app) => {
+      const copy = { ...app }
+      delete copy.icon
+      return copy
+    })
     window.electronAPI.saveApps(toStore)
   }, [])
 
@@ -107,7 +111,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const app = prev.find((a) => a.id === id)
         if (app) window.electronAPI.deleteApp(app.path)
         const next = prev.filter((a) => a.id !== id)
-        const toStore = next.map(({ icon, ...rest }) => rest)
+        const toStore = next.map((app) => {
+          const copy = { ...app }
+          delete copy.icon
+          return copy
+        })
         window.electronAPI.saveApps(toStore)
         return next
       })
@@ -119,7 +127,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const handlePin = useCallback((id: string) => {
     setApps((prev) => {
       const next = prev.map((a) => (a.id === id ? { ...a, pinned: !a.pinned } : a))
-      const toStore = next.map(({ icon, ...rest }) => rest)
+      const toStore = next.map((app) => {
+        const copy = { ...app }
+        delete copy.icon
+        return copy
+      })
       window.electronAPI.saveApps(toStore)
       return next
     })
@@ -137,7 +149,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       setApps((prev) => {
         const next = editApp ? prev.map((a) => (a.id === editApp.id ? entryWithIcon : a)) : [...prev, entryWithIcon]
-        const toStore = next.map(({ icon, ...rest }) => rest)
+        const toStore = next.map((app) => {
+          const copy = { ...app }
+          delete copy.icon
+          return copy
+        })
         window.electronAPI.saveApps(toStore)
         return next
       })
@@ -148,7 +164,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     [editApp, addToast]
   )
-
   return (
     <AppContext.Provider
       value={{

@@ -74,6 +74,12 @@ export function useUpdater() {
     }
   }
 
+  const close = () => {
+    setStatus('idle')
+    setError(null)
+    setInfo(null)
+  }
+
   const download = async () => {
     try {
       await window.electronAPI.download()
@@ -96,6 +102,7 @@ export function useUpdater() {
     progress,
     info,
     error,
+    close,
     check,
     download,
     install

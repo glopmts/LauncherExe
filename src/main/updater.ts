@@ -4,6 +4,10 @@ import { autoUpdater } from 'electron-updater'
 import { app } from 'electron/main'
 
 export function initAutoUpdater(mainWindow: BrowserWindow) {
+  if (!app.isPackaged) {
+    autoUpdater.forceDevUpdateConfig = true
+  }
+
   log.transports.file.level = 'info'
   autoUpdater.logger = log
 

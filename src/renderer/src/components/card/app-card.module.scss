@@ -214,6 +214,15 @@
       color: $text-primary;
     }
   }
+
+  .link_details {
+    font-size: 11.5px;
+    color: $text-secondary;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 }
 
 @keyframes menuIn {

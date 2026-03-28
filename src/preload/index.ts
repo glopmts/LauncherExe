@@ -31,6 +31,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // Store
   getApps: () => invoke<AppEntry[]>('store:get'),
+  getApp: () => invoke<AppEntry[]>('store:get'),
   saveApps: (data: AppEntry[]) => invoke<boolean>('store:set', data),
 
   // Auto launch

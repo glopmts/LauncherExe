@@ -1,0 +1,594 @@
+@use '../../scss/variables' as *;
+
+// Mixins
+
+@mixin glass($bg: $bg-elevated, $blur: 12px) {
+  background: $bg;
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+}
+
+@mixin subtle-border {
+  border: 1px solid $border;
+}
+
+@mixin hover-lift {
+  transition:
+    transform 0.2s $ease-out,
+    box-shadow 0.2s $ease-out;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+}
+
+// Layout
+
+.main {
+  min-height: 100vh;
+  background: $bg-deep;
+  color: $text-primary;
+  font-family: $font-sans;
+  font-size: $body-font-size;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+// Back Button
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: $font-sans;
+  font-size: $small-font-size;
+  color: $text-muted;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: $radius-sm;
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition:
+    color 0.18s $ease-out,
+    background 0.18s $ease-out;
+
+  svg {
+    transition: transform 0.2s $ease-out;
+  }
+
+  &:hover {
+    color: $text-primary;
+    background: $bg-hover;
+
+    svg {
+      transform: translateX(-3px);
+    }
+  }
+}
+
+// Hero Section
+
+.hero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.coverWrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  @include subtle-border;
+  box-shadow:
+    0 0 0 1px $border,
+    0 16px 48px rgba(0, 0, 0, 0.5);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+}
+
+.coverImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.coverFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $bg-elevated;
+  color: $accent;
+
+  svg {
+    opacity: 0.6;
+  }
+}
+
+.heroInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.appName {
+  font-family: $font-sans;
+  font-size: 26px;
+  font-weight: 700;
+  color: $text-primary;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.pinBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-family: $font-mono;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $accent-light;
+  background: $accent-dim;
+  border: 1px solid rgba(108, 99, 255, 0.25);
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.categoryBadge {
+  font-size: $small-font-size;
+  font-family: $font-mono;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid;
+
+  &.game {
+    color: $cyan;
+    background: rgba(34, 211, 238, 0.1);
+    border-color: rgba(34, 211, 238, 0.2);
+  }
+  &.app {
+    color: $green;
+    background: rgba(74, 222, 128, 0.1);
+    border-color: rgba(74, 222, 128, 0.2);
+  }
+  &.tool {
+    color: $amber;
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.2);
+  }
+  &.other {
+    color: $text-secondary;
+    background: $bg-elevated;
+    border-color: $border;
+  }
+}
+
+.statPill {
+  font-size: $small-font-size;
+  font-family: $font-mono;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  strong {
+    color: $text-secondary;
+    font-weight: 600;
+  }
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.tag {
+  font-size: 11px;
+  font-family: $font-mono;
+  color: $text-muted;
+  background: $bg-surface;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 3px 9px;
+  letter-spacing: 0.04em;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+
+  &:hover {
+    color: $text-secondary;
+    border-color: $border-strong;
+  }
+}
+
+// Action Bar
+
+.actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: $button-padding;
+  background: $accent;
+  color: $button-color;
+  font-family: $font-sans;
+  font-size: $body-font-size;
+  font-weight: 600;
+  border: none;
+  border-radius: $button-border-radius;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition:
+    opacity 0.15s,
+    transform 0.15s $ease-out,
+    box-shadow 0.15s;
+  box-shadow: 0 4px 20px $accent-glow;
+
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px $accent-glow;
+  }
+
+  &:active {
+    opacity: $button-active-opacity;
+    transform: translateY(0);
+  }
+}
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: $button-padding;
+  background: $bg-elevated;
+  color: $text-secondary;
+  font-family: $font-sans;
+  font-size: $body-font-size;
+  font-weight: 500;
+  border: 1px solid $border;
+  border-radius: $button-border-radius;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+
+  &:hover {
+    background: $bg-hover;
+    color: $text-primary;
+    border-color: $border-strong;
+  }
+
+  &:active {
+    opacity: $button-active-opacity;
+  }
+}
+
+.btnDanger {
+  @extend .btnGhost;
+  color: $red;
+  border-color: rgba(248, 113, 113, 0.15);
+  background: rgba(248, 113, 113, 0.05);
+
+  &:hover {
+    background: rgba(248, 113, 113, 0.12);
+    color: $red;
+    border-color: rgba(248, 113, 113, 0.3);
+  }
+}
+
+.divider {
+  width: 1px;
+  height: 28px;
+  background: $border;
+  margin: 0 4px;
+}
+
+// Content Grid
+
+.grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+// Card─
+
+.card {
+  @include glass;
+  @include subtle-border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid $border;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cardTitle {
+  font-family: $font-sans;
+  font-size: $small-font-size;
+  font-weight: 600;
+  color: $text-muted;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.cardIcon {
+  color: $accent;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+}
+
+.cardBody {
+  padding: 20px;
+}
+
+// Path Row─
+
+.pathBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: $bg-base;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 12px 16px;
+}
+
+.pathText {
+  font-family: $font-mono;
+  font-size: $small-font-size;
+  color: $text-secondary;
+  word-break: break-all;
+  flex: 1;
+  line-height: 1.5;
+}
+
+.copyBtn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid $border;
+  color: $text-muted;
+  border-radius: $radius-sm;
+  padding: 5px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover {
+    color: $text-primary;
+    border-color: $border-strong;
+    background: $bg-hover;
+  }
+
+  &.copied {
+    color: $green;
+    border-color: rgba(74, 222, 128, 0.3);
+  }
+}
+
+// Stats Row
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.statCard {
+  background: $bg-base;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 10px;
+  font-family: $font-mono;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: $font-sans;
+  color: $text-primary;
+  letter-spacing: -0.02em;
+}
+
+.statSub {
+  font-size: 11px;
+  font-family: $font-mono;
+  color: $text-muted;
+}
+
+// Sidebar
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Info List
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.infoRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid $border;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.infoKey {
+  font-size: $small-font-size;
+  font-family: $font-mono;
+  color: $text-muted;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.infoVal {
+  font-size: $small-font-size;
+  font-family: $font-mono;
+  color: $text-secondary;
+  text-align: right;
+  word-break: break-all;
+
+  &.accent {
+    color: $accent-light;
+  }
+}
+
+// Color Dot
+
+.colorDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+// States
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: $font-mono;
+  font-size: $small-font-size;
+  color: $text-muted;
+  letter-spacing: 0.08em;
+  gap: 10px;
+  background: $bg-deep;
+
+  &::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border: 2px solid $border-strong;
+    border-top-color: $accent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+}
+
+.infor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: $font-mono;
+  font-size: $small-font-size;
+  color: $text-muted;
+  background: $bg-deep;
+  letter-spacing: 0.04em;
+}
+
+// Separator
+
+.sep {
+  height: 1px;
+  background: $border;
+  margin: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,7 +1,7 @@
 import { Category } from '@/types/interfaces'
 import { FaCog } from 'react-icons/fa'
 import { NavLink } from 'react-router-dom'
-import styles from './Sidebar.module.scss'
+import styles from './sidebar.module.scss'
 
 interface Props {
   counts: Record<Category, number>

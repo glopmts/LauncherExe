@@ -1,5 +1,5 @@
 import { ToastMessage } from '../../app'
-import styles from './Toast.module.scss'
+import styles from './toast.module.scss'
 
 interface Props {
   message: ToastMessage

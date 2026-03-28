@@ -3,12 +3,12 @@ import styles from './app.module.scss'
 import { Sidebar } from './components/sidebar/Sidebar'
 import { Titlebar } from './components/title/Titlebar'
 import { Toast } from './components/toast/Toast'
-import { AppProvider, useAppContext } from './context/AppContext'
-import { OptimizedAnimation } from './context/OptimizedAnimation'
-import { UpdaterBadge } from './context/Updatercomponent'
+import { AppProvider, useAppContext } from './context/app-context'
+import { OptimizedAnimation } from './context/optimized-animation'
+import { UpdaterBadge } from './context/update-app'
 import './scss/global.scss'
 
-export type { ToastMessage } from './context/AppContext'
+export type { ToastMessage } from './context/app-context'
 
 function AppShell() {
   const { search, setSearch, counts, setShowAdd, setEditApp } = useAppContext()

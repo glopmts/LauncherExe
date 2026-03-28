@@ -15,7 +15,7 @@ function formatBytes(bytes: number) {
 }
 
 export function UpdaterBadge() {
-  const { status, progress, info, error, check, download, install } = useUpdater()
+  const { status, progress, info, error, check, download, install, close } = useUpdater()
 
   if (status === 'idle') return null
 
@@ -62,6 +62,9 @@ export function UpdaterBadge() {
             <span style={styles.err}>{error ?? 'Erro desconhecido'}</span>
             <button style={{ ...styles.btn, ...styles.btnMuted }} onClick={check}>
               Tentar novamente
+            </button>
+            <button style={{ ...styles.btn, ...styles.err }} onClick={close}>
+              X
             </button>
           </div>
         )}

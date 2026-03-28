@@ -1,9 +1,9 @@
-import { useAppContext } from '@/context/AppContext'
+import { useAppContext } from '@/context/app-context'
 import { Category } from '@/types/interfaces'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { AddModal } from '../../components/add-modal/AddModal'
-import { AppGrid } from '../../components/app-grid/AppGrid'
+import { AddModal } from '../../components/add-modal/add-modal'
+import { AppGrid } from '../../components/app-grid/app-grid'
 
 const PATH_TO_CATEGORY: Record<string, Category> = {
   '/': 'all',
