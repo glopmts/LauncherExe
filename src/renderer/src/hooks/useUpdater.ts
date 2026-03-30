@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { logger } from '../utils/logger'
 
 interface UpdateInfo {
   version: string
@@ -24,7 +25,7 @@ export function useUpdater() {
   useEffect(() => {
     // Verificar se a API existe
     if (!window.electronAPI) {
-      console.error('Updater API not available')
+      logger.error('Updater API not available')
       return
     }
 
@@ -93,7 +94,7 @@ export function useUpdater() {
     try {
       await window.electronAPI.install()
     } catch (err) {
-      console.error('Erro ao instalar:', err)
+      logger.error('Erro ao instalar:' + err)
     }
   }
 

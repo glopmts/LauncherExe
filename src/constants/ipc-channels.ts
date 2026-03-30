@@ -30,7 +30,12 @@ export const IPC_CHANNELS = {
   STORE_GET: 'store:get',
   STORE_SET: 'store:set',
   STORE_REMOVE: 'store:remove',
-  STORE_CLEAR: 'store:clear'
+  STORE_CLEAR: 'store:clear',
+
+  LOG: 'log:message',
+  GET_LOGS: 'log:get-logs',
+  CLEAR_LOGS: 'log:clear',
+  EXPORT_LOGS: 'log:export'
 } as const
 
 export type IPCChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS]

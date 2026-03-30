@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { IPC_CHANNELS } from '../constants/ipc-channels'
 import { Settings } from '../main/types/ipc-types'
 import type { AppEntry } from '../main/types/types'
+import { LogEntry, LogFilter, LogPayload } from '../types/log'
 
 // ── Type-safe invoke helper
 const invoke = <T>(channel: string, ...args: unknown[]): Promise<T> => ipcRenderer.invoke(channel, ...args)
@@ -70,7 +71,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onNotAvailable: (cb: () => void) => ipcRenderer.on('update:not-available', cb),
   onProgress: (cb: (p: unknown) => void) => ipcRenderer.on('update:progress', (_e, p) => cb(p)),
   onDownloaded: (cb: () => void) => ipcRenderer.on('update:downloaded', cb),
-  onError: (cb: (msg: string) => void) => ipcRenderer.on('update:error', (_e, msg) => cb(msg))
+  onError: (cb: (msg: string) => void) => ipcRenderer.on('update:error', (_e, msg) => cb(msg)),
+
+  log: (payload: LogPayload) => ipcRenderer.send(IPC_CHANNELS.LOG, payload),
+  onLog: (callback: (log: LogEntry) => void) => {
+    ipcRenderer.on(IPC_CHANNELS.LOG, (_event, log) => callback(log))
+  },
+
+  // Log management
+  getLogs: (filters: LogFilter) => ipcRenderer.invoke(IPC_CHANNELS.GET_LOGS, filters),
+  clearLogs: () => ipcRenderer.invoke(IPC_CHANNELS.CLEAR_LOGS),
+  exportLogs: () => ipcRenderer.invoke(IPC_CHANNELS.EXPORT_LOGS),
+  // Platform info
+  platform: process.platform,
+  version: process.versions.electron
 })
 
 document.addEventListener('visibilitychange', () => {

@@ -21,6 +21,6 @@
       "@/types": ["/src/types"]
     },
   },
-  "include": ["src/renderer", "src/main/types/types.ts"],
+  "include": ["src/renderer", "src/main/types/types.ts", "src/types/log.ts"],
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }]
 }

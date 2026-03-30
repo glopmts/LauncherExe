@@ -55,6 +55,13 @@ export interface ElectronAPI {
   check: () => Promise<void>
   download: () => Promise<void>
   install: () => Promise<void>
+
+  //logs
+  onLog: (callback: (log: LogEntry) => void) => void
+  getLogs: (filters: LogFilter) => Promise<LogEntry[]>
+  clearLogs: () => Promise<{ success: boolean }>
+  exportLogs: () => Promise<string>
+  log: (payload: LogPayload) => void
 }
 
 declare global {

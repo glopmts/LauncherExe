@@ -2,12 +2,13 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, shell } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { join } from 'path'
-import icon from '../../resources/icon.png?asset'
+import { setupLogHandlers } from './ipc/log-handlers'
+import { mainLogger } from './logge/logger'
 import { registerIpcHandlers } from './modules/ipcHandlers'
 import { buildTray, showBalloon } from './modules/tray'
 import { initAutoUpdater } from './updater'
 
-// State
+const iconPath = join(__dirname, '../../resources/icon.ico')
 
 let mainWindow: BrowserWindow | null = null
 let isQuitting = false
@@ -20,6 +21,7 @@ let windowState: 'focused' | 'background' | 'hidden' = 'focused'
 
 app.commandLine.appendSwitch('disable-gpu-vsync')
 app.commandLine.appendSwitch('disable-gpu-compositing')
+app.setAppUserModelId('com.launcherexe.glop')
 
 const FPS = { focused: 60, background: 15, hidden: 1 } as const
 
@@ -32,8 +34,8 @@ function createWindow(): BrowserWindow {
     show: false,
     autoHideMenuBar: true,
     frame: false,
-    icon,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    icon: iconPath,
+    ...(process.platform === 'linux' ? { iconPath } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -172,6 +174,10 @@ app.whenReady().then(() => {
   registerIpcHandlers(getWindow, hideWindow, quit)
   initAutoUpdater(mainWindow)
   scheduleBackgroundMaintenance()
+  setupLogHandlers()
+
+  // Log app start
+  mainLogger.info('Application started', 'main')
 
   // Verifica updates 3s após o renderer carregar
   mainWindow.webContents.once('did-finish-load', () => {

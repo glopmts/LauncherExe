@@ -8,6 +8,7 @@ import App from './app'
 import ConfigPage from './pages/config/config-page'
 import Details from './pages/details/[id]'
 import Home from './pages/home/home-page'
+import LogsPage from './pages/logs/logs-page'
 import NotFound from './pages/not-found/not-found'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -24,6 +25,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/tools" element={<Home />} />
           <Route path="/other" element={<Home />} />
           <Route path="/details/:id" element={<Details />} />
+          <Route path="/logs" element={<LogsPage />} />
           {/* Settings */}
           <Route path="/config" element={<ConfigPage />} />
         </Route>

@@ -7,12 +7,12 @@ export function buildTray(showWindow: () => void, quit: () => void): Tray {
   let iconPath: string
 
   if (process.env.NODE_ENV === 'development') {
-    iconPath = join(__dirname, '../../resources/icon.png')
+    iconPath = join(__dirname, '../../resources/icon-tray.png')
   } else {
-    iconPath = join(process.resourcesPath, 'icon.png')
+    iconPath = join(process.resourcesPath, 'icon-tray.png')
   }
 
-  const icon = nativeImage.createFromPath(iconPath).resize({ width: 50, height: 50 })
+  const icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 })
 
   if (icon.isEmpty()) {
     console.error('Falha ao carregar o ícone:', iconPath)

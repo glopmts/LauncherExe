@@ -1,29 +1,56 @@
-# .github/workflows/release.yml
-name: Release
+name: Build/release Electron app
 
 on:
   push:
     tags:
-      - 'v*'
+      - v*.*.*
 
 jobs:
   release:
     runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out Git repository
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 16
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Build e publish
+      - name: build-linux
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run build:linux
+
+      - name: build-mac
+        if: matrix.os == 'macos-latest'
+        run: npm run build:mac
+
+      - name: build-win
+        if: matrix.os == 'windows-latest'
+        run: npm run build:win
+
+      - name: release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            dist/*.exe
+            dist/*.zip
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.snap
+            dist/*.deb
+            dist/*.rpm
+            dist/*.tar.gz
+            dist/*.yml
+            dist/*.blockmap
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run release
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

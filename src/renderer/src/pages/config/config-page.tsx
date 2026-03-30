@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { electronConfig } from '../../services/electron-config.service'
 import styles from './config-page.module.scss'
 
@@ -12,6 +13,8 @@ interface ConfigOption {
 }
 
 const ConfigPage = () => {
+  const navigate = useNavigate()
+
   const [options, setOptions] = useState<ConfigOption[]>([
     {
       id: 1,
@@ -81,6 +84,16 @@ const ConfigPage = () => {
         } catch (error) {
           console.error('Erro ao abrir pasta de dados:', error)
         }
+      }
+    },
+    {
+      id: 5,
+      name: 'Logs Aplicação',
+      description: 'Acesse a pagina logs aplicativo',
+      isActive: false,
+      type: 'button',
+      handle: async () => {
+        navigate('/logs')
       }
     }
   ])

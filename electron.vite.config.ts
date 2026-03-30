@@ -5,7 +5,15 @@ import path from 'path'
 export default defineConfig({
   main: {
     build: {
-      rollupOptions: {}
+      rollupOptions: {
+        output: {
+          manualChunks(id): string | void {
+            if (id.includes('foo')) {
+              return 'foo'
+            }
+          }
+        }
+      }
     },
     resolve: {
       alias: {
