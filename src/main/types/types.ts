@@ -4,6 +4,7 @@ export interface AppEntry {
   path: string
   category: 'game' | 'app' | 'tool' | 'other'
   cover?: string
+  icon?: string | null
   color?: string
   lastLaunched?: string
   launchCount: number

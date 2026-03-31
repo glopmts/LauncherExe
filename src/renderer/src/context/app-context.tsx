@@ -83,23 +83,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const handleLaunch = useCallback(
     async (app: AppEntry) => {
       setLaunching(app.id)
+
       const res = await window.electronAPI.launch(app.path)
+
       if (res.success) {
         addToast(`Launched ${app.name}`, 'success')
-        setApps((prev) =>
-          prev.map((a) =>
-            a.id === app.id
-              ? {
-                  ...a,
-                  lastLaunched: new Date().toISOString(),
-                  launchCount: a.launchCount + 1
-                }
-              : a
-          )
-        )
+
+        const updated = {
+          ...app,
+          lastLaunched: new Date().toISOString(),
+          launchCount: app.launchCount + 1
+        }
+
+        setApps((prev) => prev.map((a) => (a.id === app.id ? updated : a)))
+
+        /* Notifica o main para persistir nos recentes e atualizar o tray.
+         Passa o app atualizado (com ícone) para o main ter nome e ícone prontos. */
+        await window.electronAPI.addRecentApp(updated)
       } else {
         addToast(`Failed to launch ${app.name}`, 'error')
       }
+
       setTimeout(() => setLaunching(null), 800)
     },
     [addToast]

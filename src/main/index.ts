@@ -1,4 +1,4 @@
-import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+import { is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, shell } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { join } from 'path'
@@ -14,18 +14,20 @@ let mainWindow: BrowserWindow | null = null
 let isQuitting = false
 let windowState: 'focused' | 'background' | 'hidden' = 'focused'
 
-// GPU / performance flags
-// Nota: disableHardwareAcceleration() e os switches
-// abaixo são mutuamente exclusivos — escolha um ou outro.
-// Aqui usamos os switches para controle granular.
+autoUpdater.setFeedURL({
+  provider: 'github',
+  owner: 'glopmts',
+  repo: 'launcherexe'
+})
 
 app.commandLine.appendSwitch('disable-gpu-vsync')
 app.commandLine.appendSwitch('disable-gpu-compositing')
+
+/* Define o App User Model ID antes do whenReady para garantir que
+   notificações e ícone da taskbar usem o ID correto no Windows */
 app.setAppUserModelId('com.launcherexe.glop')
 
 const FPS = { focused: 60, background: 15, hidden: 1 } as const
-
-// Window factory
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -45,7 +47,6 @@ function createWindow(): BrowserWindow {
     }
   })
 
-  // Carregar URL correta (dev vs prod)
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     win.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -76,8 +77,6 @@ function createWindow(): BrowserWindow {
 
   return win
 }
-
-// Performance modes
 
 function setPerformanceMode(win: BrowserWindow, mode: typeof windowState): void {
   if (windowState === mode) return
@@ -110,8 +109,6 @@ function setPerformanceMode(win: BrowserWindow, mode: typeof windowState): void 
   }
 }
 
-// Window helpers (passados para outros módulos)
-
 function getWindow(): BrowserWindow | null {
   return mainWindow
 }
@@ -135,17 +132,15 @@ function quit(): void {
   app.quit()
 }
 
-// GC periódico (só quando em background)
-
 function scheduleBackgroundMaintenance(): void {
-  // GC a cada 60s — só executa quando a janela não está em foco
+  /* GC periódico apenas quando a janela não está em foco */
   setInterval(() => {
     if (windowState !== 'focused' && global.gc) {
       global.gc()
     }
   }, 60_000)
 
-  // Limpa cache a cada 5min — só quando não está em uso
+  /* Limpa cache somente quando a janela está oculta */
   setInterval(() => {
     if (windowState === 'hidden') {
       mainWindow?.webContents.session.clearCache().catch(() => {})
@@ -153,15 +148,15 @@ function scheduleBackgroundMaintenance(): void {
   }, 300_000)
 }
 
-// App lifecycle
-
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.electron')
+  /* electronApp.setAppUserModelId removido daqui pois sobrescrevia
+     o ID definido acima e causava identificação errada no Windows */
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  optimizer.watchWindowShortcuts
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
 
-    // Bloqueia analytics em background
     window.webContents.session.webRequest.onBeforeRequest((details, callback) => {
       const isAnalytics = details.url.includes('analytics') || details.url.includes('telemetry')
       callback({ cancel: windowState !== 'focused' && isAnalytics })
@@ -171,15 +166,13 @@ app.whenReady().then(() => {
   mainWindow = createWindow()
 
   buildTray(showWindow, quit)
-  registerIpcHandlers(getWindow, hideWindow, quit)
+  registerIpcHandlers(getWindow, hideWindow, quit, showWindow)
   initAutoUpdater(mainWindow)
   scheduleBackgroundMaintenance()
   setupLogHandlers()
 
-  // Log app start
   mainLogger.info('Application started', 'main')
 
-  // Verifica updates 3s após o renderer carregar
   mainWindow.webContents.once('did-finish-load', () => {
     setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 3_000)
   })

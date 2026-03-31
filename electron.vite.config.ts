@@ -12,7 +12,8 @@ export default defineConfig({
               return 'foo'
             }
           }
-        }
+        },
+        external: ['pe-library', 'icojs']
       }
     },
     resolve: {

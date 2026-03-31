@@ -62,6 +62,8 @@ export interface ElectronAPI {
   clearLogs: () => Promise<{ success: boolean }>
   exportLogs: () => Promise<string>
   log: (payload: LogPayload) => void
+
+  addRecentApp(updated: AppEntry): unknown
 }
 
 declare global {

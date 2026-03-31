@@ -1,7 +1,7 @@
 directories:
   output: release
   buildResources: build
-appId: gg.launcherexe.glop
+appId: com.launcherexe.glop
 productName: LauncherExe
 files:
   - filter:

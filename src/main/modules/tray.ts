@@ -1,40 +1,58 @@
+import { is } from '@electron-toolkit/utils'
 import { Menu, nativeImage, Tray } from 'electron'
 import { join } from 'path'
+import { buildRecentMenuItems, RecentApp } from './recent-apps'
 
 let tray: Tray | null = null
 
 export function buildTray(showWindow: () => void, quit: () => void): Tray {
-  let iconPath: string
-
-  if (process.env.NODE_ENV === 'development') {
-    iconPath = join(__dirname, '../../resources/icon-tray.png')
-  } else {
-    iconPath = join(process.resourcesPath, 'icon-tray.png')
-  }
+  const iconPath = is.dev ? join(__dirname, '../../resources/icon.png') : join(process.resourcesPath, 'icon.png')
 
   const icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 })
 
-  if (icon.isEmpty()) {
-    console.error('Falha ao carregar o ícone:', iconPath)
-    const fallbackIcon = nativeImage.createEmpty()
-    tray = new Tray(fallbackIcon)
-  } else {
-    tray = new Tray(icon)
-  }
+  tray = icon.isEmpty() ? new Tray(nativeImage.createEmpty()) : new Tray(icon)
 
   tray.setToolTip('EXE Vault')
-  tray.setContextMenu(
-    Menu.buildFromTemplate([
-      { label: 'Open EXE Vault', click: showWindow },
-      { type: 'separator' },
-      { label: 'Quit', click: quit }
-    ])
-  )
+
+  /* Menu inicial sem recentes */
+  setTrayMenu(showWindow, quit, [])
 
   tray.on('click', showWindow)
   tray.on('double-click', showWindow)
 
   return tray
+}
+
+/* Reconstrói o menu do tray com a lista de recentes atualizada.
+   Deve ser chamado sempre que um app for lançado. */
+export function updateTrayMenu(
+  showWindow: () => void,
+  quit: () => void,
+  recents: RecentApp[],
+  onLaunch: (exePath: string) => void
+): void {
+  if (!tray || tray.isDestroyed()) return
+  setTrayMenu(showWindow, quit, recents, onLaunch)
+}
+
+function setTrayMenu(
+  showWindow: () => void,
+  quit: () => void,
+  recents: RecentApp[] = [],
+  onLaunch?: (exePath: string) => void
+): void {
+  const recentItems = buildRecentMenuItems(recents, onLaunch ?? (() => {}))
+
+  const menu = Menu.buildFromTemplate([
+    { label: 'Abrir EXE Vault', click: showWindow },
+    { type: 'separator' },
+    { label: 'Recentes', enabled: false },
+    ...recentItems,
+    { type: 'separator' },
+    { label: 'Sair', click: quit }
+  ])
+
+  tray!.setContextMenu(menu)
 }
 
 export function getTray(): Tray | null {

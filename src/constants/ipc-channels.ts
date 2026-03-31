@@ -35,7 +35,10 @@ export const IPC_CHANNELS = {
   LOG: 'log:message',
   GET_LOGS: 'log:get-logs',
   CLEAR_LOGS: 'log:clear',
-  EXPORT_LOGS: 'log:export'
+  EXPORT_LOGS: 'log:export',
+
+  GET_RECENT_APPS: 'store:get-recent',
+  ADD_RECENT_APP: 'store:add-recent'
 } as const
 
 export type IPCChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS]

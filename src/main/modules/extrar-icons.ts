@@ -3,7 +3,6 @@ import { app } from 'electron'
 import fs from 'fs'
 import icojs from 'icojs'
 import path from 'path'
-import { NtExecutable, NtExecutableResource } from 'pe-library'
 import { promisify } from 'util'
 
 const execFileAsync = promisify(execFile)
@@ -11,7 +10,8 @@ const execFileAsync = promisify(execFile)
 let iconsDir = ''
 let tempDir = ''
 
-// ── Icon cache helpers
+const RT_ICON = 3
+const RT_GROUP_ICON = 14
 
 export function iconFilePath(exePath: string): string | null {
   if (!iconsDir) return null
@@ -19,7 +19,7 @@ export function iconFilePath(exePath: string): string | null {
   return path.join(iconsDir, `${hash}.png`)
 }
 
-export function initIconPaths(icons: string, temp: string) {
+export function initIconPaths(icons: string, temp: string): void {
   iconsDir = icons
   tempDir = temp
 }
@@ -41,29 +41,33 @@ export function saveIconCache(exePath: string, pngBuffer: Buffer, size?: number)
   return `data:image/png;base64,${pngBuffer.toString('base64')}`
 }
 
-// Tipos de recurso do Windows
-const RT_ICON = 3
-const RT_GROUP_ICON = 14
-
 export async function extractIconFromExe(exePath: string): Promise<Buffer | null> {
+  /* pe-library pode vir undefined se o bundler não o externalizou corretamente */
+  let NtExecutable: any
+  let NtExecutableResource: any
+
+  try {
+    const peLib = await import('pe-library')
+    NtExecutable = peLib.NtExecutable
+    NtExecutableResource = peLib.NtExecutableResource
+  } catch {
+    return null
+  }
+
+  if (!NtExecutable?.from || !NtExecutableResource?.from) return null
+
   try {
     const data = fs.readFileSync(exePath)
 
-    const exe = NtExecutable.from(data, {
-      ignoreCert: true
-    })
+    const exe = NtExecutable.from(data, { ignoreCert: true })
     const res = NtExecutableResource.from(exe)
 
     const entries = res.entries
-
-    // pega grupos de ícone
-    const groups = entries.filter((e) => e.type === RT_GROUP_ICON)
+    const groups = entries.filter((e: any) => e.type === RT_GROUP_ICON)
     if (groups.length === 0) return null
 
-    const group = groups[0] // pode melhorar depois escolhendo melhor
-
+    const group = groups[0]
     const groupData = Buffer.from(group.bin)
-    // parse manual do GROUP_ICON
     const count = groupData.readUInt16LE(4)
 
     const images: Buffer[] = []
@@ -73,11 +77,9 @@ export async function extractIconFromExe(exePath: string): Promise<Buffer | null
 
       const width = groupData.readUInt8(offset) || 256
       const height = groupData.readUInt8(offset + 1) || 256
-      // const size = groupData.readUInt32LE(offset + 8)
       const id = groupData.readUInt16LE(offset + 12)
 
-      const iconEntry = entries.find((e) => e.type === RT_ICON && e.id === id)
-
+      const iconEntry = entries.find((e: any) => e.type === RT_ICON && e.id === id)
       if (!iconEntry) continue
 
       const img = Buffer.from(iconEntry.bin)
@@ -85,8 +87,8 @@ export async function extractIconFromExe(exePath: string): Promise<Buffer | null
       images.push(
         Buffer.concat([
           Buffer.from([width === 256 ? 0 : width, height === 256 ? 0 : height, 0, 0, 1, 0, 32, 0]),
-          Buffer.alloc(4), // size placeholder
-          Buffer.alloc(4), // offset placeholder
+          Buffer.alloc(4),
+          Buffer.alloc(4),
           img
         ])
       )
@@ -94,7 +96,6 @@ export async function extractIconFromExe(exePath: string): Promise<Buffer | null
 
     if (!images.length) return null
 
-    // monta ICO manual
     const header = Buffer.alloc(6)
     header.writeUInt16LE(0, 0)
     header.writeUInt16LE(1, 2)
@@ -106,37 +107,34 @@ export async function extractIconFromExe(exePath: string): Promise<Buffer | null
 
     for (const img of images) {
       const size = img.length - 16
-
       const entry = Buffer.from(img.slice(0, 16))
       entry.writeUInt32LE(size, 8)
       entry.writeUInt32LE(offset, 12)
-
       dirEntries.push(entry)
       imageBuffers.push(img.slice(16))
-
       offset += size
     }
 
     const icoBuffer = Buffer.concat([header, ...dirEntries, ...imageBuffers])
 
-    // 🔥 parse com icojs
-    const parsed = await icojs.parseICO(icoBuffer, 'image/png')
+    /* icojs também pode falhar em ICOs malformados */
+    let parsed: any[]
+    try {
+      parsed = await icojs.parseICO(icoBuffer, 'image/png')
+    } catch {
+      return null
+    }
 
     if (!parsed.length) return null
 
-    const best = parsed.sort((a, b) => b.width - a.width)[0]
-
-    if (best.width < 64) return null
+    const best = parsed.sort((a: any, b: any) => b.width - a.width)[0]
+    if (!best?.buffer || best.width < 64) return null
 
     return Buffer.from(best.buffer)
-  } catch (err) {
-    console.log(err)
+  } catch {
     return null
   }
 }
-
-// ── Strategy 1: Electron native getFileIcon ───────────────────────────────────
-// "large" is the maximum valid size option (32×32 on Windows, best on others).
 
 async function extractIconNative(exePath: string): Promise<Buffer | null> {
   try {
@@ -174,30 +172,24 @@ public class IconExtractor {
   static extern bool DestroyIcon(IntPtr hIcon);
 
   public static Bitmap GetBestQualityIcon(string path) {
-    // Tenta extrair em diferentes tamanhos (maior qualidade possível)
     int[] sizes = new int[] { 256, 128, 96, 64, 48, 32, 24, 16 };
     Bitmap bestIcon = null;
     int bestSize = 0;
 
     foreach (int size in sizes) {
       IntPtr[] hIcons = new IntPtr[1];
-      int[]    ids    = new int[1];
+      int[] ids = new int[1];
       int count = PrivateExtractIcons(path, 0, size, size, hIcons, ids, 1, 0);
-      
+
       if (count > 0 && hIcons[0] != IntPtr.Zero) {
         using (Icon ico = Icon.FromHandle(hIcons[0])) {
-          Bitmap bmp = $icon.Save($stream));
+          Bitmap bmp = new Bitmap(ico.ToBitmap());
           DestroyIcon(hIcons[0]);
-          
-          // Se encontrou um ícone do tamanho solicitado
-          if (bmp.Width == size) {
-            if (size > bestSize) {
-              bestIcon?.Dispose();
-              bestIcon = bmp;
-              bestSize = size;
-            } else {
-              bmp.Dispose();
-            }
+
+          if (bmp.Width == size && size > bestSize) {
+            bestIcon?.Dispose();
+            bestIcon = bmp;
+            bestSize = size;
           } else {
             bmp.Dispose();
           }
@@ -205,13 +197,10 @@ public class IconExtractor {
       }
     }
 
-    // Se não encontrou nenhum ícone com PrivateExtractIcons
     if (bestIcon == null) {
-      using (Icon ico = System.Drawing.Icon.ExtractAssociatedIcon(path)) {
-        if (ico != null) {
-          bestIcon = $icon.Save($stream));
-          bestSize = bestIcon.Width;
-        }
+      Icon ico = System.Drawing.Icon.ExtractAssociatedIcon(path);
+      if (ico != null) {
+        bestIcon = new Bitmap(ico.ToBitmap());
       }
     }
 
@@ -222,12 +211,8 @@ public class IconExtractor {
 
 try {
   $bmp = [IconExtractor]::GetBestQualityIcon("${exeEscaped}")
+  if ($bmp -eq $null) { exit 1 }
 
-  if ($bmp -eq $null) {
-    exit 1
-  }
-
-  # Se o ícone for menor que 256, upscale mantendo qualidade
   if ($bmp.Width -ge 128 -and $bmp.Width -lt 256) {
     $big = New-Object System.Drawing.Bitmap(256, 256)
     $g   = [System.Drawing.Graphics]::FromImage($big)
@@ -235,27 +220,24 @@ try {
     $g.SmoothingMode      = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
     $g.PixelOffsetMode    = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
     $g.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
-    
-    # Usar antialiasing para melhor qualidade
     $g.DrawImage($bmp, 0, 0, 256, 256)
     $g.Dispose()
     $bmp.Dispose()
     $bmp = $big
   }
 
-  # Salvar com alta qualidade PNG
   $encoderParams = New-Object System.Drawing.Imaging.EncoderParameters(1)
   $encoderParams.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
     [System.Drawing.Imaging.Encoder]::Quality, 100L
   )
-  $pngCodec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | 
+  $pngCodec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() |
     Where-Object { $_.FormatID -eq [System.Drawing.Imaging.ImageFormat]::Png.Guid }
-  
+
   $bmp.Save("${outEscaped}", $pngCodec, $encoderParams)
   $bmp.Dispose()
   exit 0
-} catch { 
-  exit 1 
+} catch {
+  exit 1
 }
 `
 
@@ -271,43 +253,31 @@ try {
   } catch {
     return null
   } finally {
-    try {
-      fs.unlinkSync(scriptPath)
-    } catch {
-      /* ignore */
-    }
-    try {
-      fs.unlinkSync(outPath)
-    } catch {
-      /* ignore */
+    for (const p of [scriptPath, outPath]) {
+      try {
+        fs.unlinkSync(p)
+      } catch {
+        /* ignore */
+      }
     }
   }
 }
-
-// ── Full extraction pipeline ──────────────────────────────────────────────────
-// 1. Cache hit  → instant (delete userData/icons/ to force re-extraction)
-// 2. PowerShell → native largest icon via PrivateExtractIcons (Win32 API)
-// 3. Native     → app.getFileIcon 'large' (cross-platform fallback)
 
 export async function extractIcon(exePath: string): Promise<string | null> {
   const cached = getCachedIcon(exePath)
   if (cached) return cached
 
-  // 🥇 Melhor método (sem perda)
   const icoBuf = await extractIconFromExe(exePath)
   if (icoBuf) return saveIconCache(exePath, icoBuf)
 
-  // 🥈 PowerShell fallback
   const psBuf = await extractIconPowerShell(exePath)
   if (psBuf) return saveIconCache(exePath, psBuf)
 
-  // 🥉 Electron fallback
   const nativeBuf = await extractIconNative(exePath)
   if (nativeBuf) return saveIconCache(exePath, nativeBuf)
 
   return null
 }
-// ── Product name from PE version info ────────────────────────────────────────
 
 export async function readProductName(exePath: string): Promise<string> {
   if (process.platform !== 'win32' || !tempDir) return ''
